@@ -7,6 +7,9 @@ export class User extends BaseEntity {
   id!: number;
 
   @Column({ unique: true })
+  userId: string;
+
+  @Column({ nullable: true })
   email!: string;
 
   @Column()
@@ -17,4 +20,7 @@ export class User extends BaseEntity {
 
   @Column({ nullable: true })
   refreshToken: string;
+
+  @Column({ nullable: true })
+  provider: string;
 }
