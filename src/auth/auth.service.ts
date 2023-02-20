@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import * as bcrypt from 'bcryptjs';
+import { UserRole } from 'src/types/enums';
 
 @Injectable()
 export class AuthService {
@@ -18,14 +19,17 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(authCredentialsDto: AuthCredentialsDto): Promise<User> {
-    const { email, password, role } = authCredentialsDto;
+  async register(
+    authCredentialsDto: AuthCredentialsDto,
+    role: UserRole,
+  ): Promise<User> {
+    const { userId, password } = authCredentialsDto;
 
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOne({ where: { userId } });
 
     if (user) {
       throw new BadRequestException(
-        'The requested email is already registered',
+        'The requested userId is already registered',
       );
     }
 
@@ -33,7 +37,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = this.userRepository.create({
-      email,
+      userId,
       password: hashedPassword,
       role,
     });
@@ -45,13 +49,16 @@ export class AuthService {
     }
   }
 
-  async login(authCredentialsDto: AuthCredentialsDto): Promise<any> {
-    const { email, password, role } = authCredentialsDto;
-    console.log('authCredentials', authCredentialsDto);
+  async login(
+    authCredentialsDto: AuthCredentialsDto,
+    role: UserRole,
+  ): Promise<any> {
+    const { userId, password } = authCredentialsDto;
 
-    const user = await this.userRepository.findOne({ where: { email, role } });
+    const user = await this.userRepository.findOne({ where: { userId, role } });
 
-    if (!user) throw new NotFoundException('Email does not exist');
+    if (!user)
+      throw new NotFoundException('The requested userId does not exist');
 
     const passwordMatch = await bcrypt.compare(password, user.password);
 
@@ -67,15 +74,51 @@ export class AuthService {
     }
   }
 
-  async generateRefreshToken(userId: number): Promise<string> {
+  async googleLogin(googleAuth: any): Promise<any> {
+    const { provider, userId, email, role } = googleAuth;
+
+    const user = await this.userRepository.findOne({
+      where: { userId, provider, role },
+    });
+
+    if (!user) {
+      //회원가입
+      const newUser = this.userRepository.create({
+        userId,
+        email,
+        password: 'google',
+        role,
+        provider,
+      });
+
+      try {
+        await this.userRepository.save(newUser);
+      } catch (e) {
+        throw e;
+      }
+
+      const refreshToken = await this.generateRefreshToken(newUser.id);
+      const accessToken = await this.generateAccessToken(newUser.id);
+
+      return { refreshToken, accessToken };
+    } else {
+      const refreshToken =
+        user.refreshToken || (await this.generateRefreshToken(user.id));
+      const accessToken = await this.generateAccessToken(user.id);
+
+      return { refreshToken, accessToken };
+    }
+  }
+
+  async generateRefreshToken(id: number): Promise<string> {
     const refreshToken = await this.jwtService.signAsync(
-      { userId },
+      { id },
       {
         expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRE,
       },
     );
 
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findOne({ where: { id } });
     user.refreshToken = refreshToken;
 
     await this.userRepository.save(user);
@@ -83,9 +126,9 @@ export class AuthService {
     return refreshToken;
   }
 
-  async generateAccessToken(userId: number): Promise<string> {
+  async generateAccessToken(id: number): Promise<string> {
     return await this.jwtService.signAsync(
-      { userId },
+      { id },
       {
         expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRE,
       },

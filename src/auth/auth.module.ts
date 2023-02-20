@@ -2,9 +2,11 @@ import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
+import { User } from 'src/entities/user.entity';
+import { GoogleStrategy } from './guard/google.strategy';
+import { GoogleGuardianStrategy } from './guard/google.guardian.strategy';
 
 @Module({
   imports: [
@@ -19,6 +21,6 @@ import { ConfigModule } from '@nestjs/config';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, GoogleStrategy, GoogleGuardianStrategy],
 })
 export class AuthModule {}
