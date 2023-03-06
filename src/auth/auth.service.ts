@@ -9,7 +9,6 @@ import { Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import * as bcrypt from 'bcryptjs';
-import { UserRole } from 'src/types/enums';
 
 @Injectable()
 export class AuthService {
@@ -19,10 +18,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(
-    authCredentialsDto: AuthCredentialsDto,
-    role: UserRole,
-  ): Promise<User> {
+  async register(authCredentialsDto: AuthCredentialsDto): Promise<User> {
     const { userId, password } = authCredentialsDto;
 
     const user = await this.userRepository.findOne({ where: { userId } });
@@ -39,7 +35,6 @@ export class AuthService {
     const newUser = this.userRepository.create({
       userId,
       password: hashedPassword,
-      role,
     });
 
     try {
@@ -49,13 +44,10 @@ export class AuthService {
     }
   }
 
-  async login(
-    authCredentialsDto: AuthCredentialsDto,
-    role: UserRole,
-  ): Promise<any> {
+  async login(authCredentialsDto: AuthCredentialsDto): Promise<any> {
     const { userId, password } = authCredentialsDto;
 
-    const user = await this.userRepository.findOne({ where: { userId, role } });
+    const user = await this.userRepository.findOne({ where: { userId } });
 
     if (!user)
       throw new NotFoundException('The requested userId does not exist');
@@ -75,10 +67,10 @@ export class AuthService {
   }
 
   async googleLogin(googleAuth: any): Promise<any> {
-    const { provider, userId, email, role } = googleAuth;
+    const { provider, userId, email } = googleAuth;
 
     const user = await this.userRepository.findOne({
-      where: { userId, provider, role },
+      where: { userId, provider },
     });
 
     if (!user) {
@@ -87,7 +79,6 @@ export class AuthService {
         userId,
         email,
         password: 'google',
-        role,
         provider,
       });
 

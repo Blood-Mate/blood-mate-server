@@ -12,14 +12,13 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
       forbidUnknownValues: true,
-      skipUndefinedProperties: true,
       stopAtFirstError: true,
     }),
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Guide-Eye Server')
-    .setDescription('Guide-Eye API Description')
+    .setTitle('Blood-Mate Server')
+    .setDescription('Blood-Mate API Description')
     .setVersion('1.0.0')
     .build();
 

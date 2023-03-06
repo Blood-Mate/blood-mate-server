@@ -20,7 +20,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       provider: 'google',
       userId: id,
       email: emails[0].value,
-      role: 'general',
     };
   }
 }

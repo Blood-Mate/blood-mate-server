@@ -1,51 +1,35 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
-import { UserRole } from 'src/types/enums';
+import { TokenResponseDto } from './dto/token-response.dto';
+import { User } from 'src/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('/register/:role')
+  @Post('/register')
   @ApiOperation({ summary: '로컬 회원가입' })
   async createUser(
-    @Param('role') role: UserRole,
     @Body() authCredentialsDto: AuthCredentialsDto,
-  ) {
-    return this.authService.register(authCredentialsDto, role);
+  ): Promise<User> {
+    return this.authService.register(authCredentialsDto);
   }
 
-  @Post('/login/:role')
+  @Post('/login')
   @ApiOperation({ summary: '로컬 로그인' })
   async login(
-    @Param('role') role: UserRole,
     @Body() authCredentialsDto: AuthCredentialsDto,
-  ) {
-    return this.authService.login(authCredentialsDto, role);
+  ): Promise<TokenResponseDto> {
+    return this.authService.login(authCredentialsDto);
   }
 
   @Get('/google')
   @UseGuards(AuthGuard('google'))
-  @ApiOperation({ summary: '일반 유저 구글 로그인' })
+  @ApiOperation({ summary: '구글 로그인' })
   async googleAuth(): Promise<void> {
-    //redirect google login page
-  }
-
-  @Get('/google/guardian')
-  @UseGuards(AuthGuard('google-guardian'))
-  @ApiOperation({ summary: '보호자 유저 구글 로그인' })
-  async googleAuthGuardian(): Promise<void> {
     //redirect google login page
   }
 
