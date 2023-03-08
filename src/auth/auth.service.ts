@@ -4,24 +4,22 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from 'src/entities/user.entity';
-import { AuthCredentialsDto } from './dto/auth-credentials.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 import * as bcrypt from 'bcryptjs';
+import { UserRepository } from 'src/repositories/user.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private readonly userRepository: UserRepository,
     private jwtService: JwtService,
   ) {}
 
-  async register(authCredentialsDto: AuthCredentialsDto): Promise<User> {
-    const { userId, password } = authCredentialsDto;
+  async register(registerUserDto: RegisterUserDto): Promise<void> {
+    const { phoneNumber, password, name, bloodType } = registerUserDto;
 
-    const user = await this.userRepository.findOne({ where: { userId } });
+    const user = await this.userRepository.findUserByPhoneNumber(phoneNumber);
 
     if (user) {
       throw new BadRequestException(
@@ -32,25 +30,23 @@ export class AuthService {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = this.userRepository.create({
-      userId,
-      password: hashedPassword,
-    });
-
-    try {
-      return await this.userRepository.save(newUser);
-    } catch (e) {
-      throw e;
-    }
+    return this.userRepository.createUser(
+      phoneNumber,
+      hashedPassword,
+      name,
+      bloodType,
+    );
   }
 
-  async login(authCredentialsDto: AuthCredentialsDto): Promise<any> {
-    const { userId, password } = authCredentialsDto;
+  async login(loginUserDto: LoginUserDto): Promise<any> {
+    const { phoneNumber, password } = loginUserDto;
 
-    const user = await this.userRepository.findOne({ where: { userId } });
+    const user = await this.userRepository.findUserByPhoneNumber(phoneNumber);
 
     if (!user)
-      throw new NotFoundException('The requested userId does not exist');
+      throw new NotFoundException(
+        'The requested phoneNumber is not registered',
+      );
 
     const passwordMatch = await bcrypt.compare(password, user.password);
 
@@ -66,39 +62,11 @@ export class AuthService {
     }
   }
 
-  async googleLogin(googleAuth: any): Promise<any> {
-    const { provider, userId, email } = googleAuth;
+  async checkPhoneNumberExist(phoneNumber: string): Promise<boolean> {
+    const user = await this.userRepository.findUserByPhoneNumber(phoneNumber);
 
-    const user = await this.userRepository.findOne({
-      where: { userId, provider },
-    });
-
-    if (!user) {
-      //회원가입
-      const newUser = this.userRepository.create({
-        userId,
-        email,
-        password: 'google',
-        provider,
-      });
-
-      try {
-        await this.userRepository.save(newUser);
-      } catch (e) {
-        throw e;
-      }
-
-      const refreshToken = await this.generateRefreshToken(newUser.id);
-      const accessToken = await this.generateAccessToken(newUser.id);
-
-      return { refreshToken, accessToken };
-    } else {
-      const refreshToken =
-        user.refreshToken || (await this.generateRefreshToken(user.id));
-      const accessToken = await this.generateAccessToken(user.id);
-
-      return { refreshToken, accessToken };
-    }
+    if (user) return true;
+    else return false;
   }
 
   async generateRefreshToken(id: number): Promise<string> {
@@ -109,12 +77,7 @@ export class AuthService {
       },
     );
 
-    const user = await this.userRepository.findOne({ where: { id } });
-    user.refreshToken = refreshToken;
-
-    await this.userRepository.save(user);
-
-    return refreshToken;
+    return await this.userRepository.updateRefreshToken(id, refreshToken);
   }
 
   async generateAccessToken(id: number): Promise<string> {
