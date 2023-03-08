@@ -8,3 +8,14 @@ export enum BloodType {
   'O+' = 'O+',
   'O-' = 'O-',
 }
+
+export enum BloodDonationType {
+  'WB' = 'whole_blood',
+  'PLT' = 'platelets',
+  'WBC' = 'white_blood_cell',
+}
+
+export enum Relationship {
+  'Family' = 'fa',
+  'Friend' = 'fr',
+}
