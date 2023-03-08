@@ -6,10 +6,10 @@ import {
   MaxLength,
 } from 'class-validator';
 
-export class AuthCredentialsDto {
+export class LoginUserDto {
   @IsNotEmpty()
-  @ApiProperty({ description: '아이디', type: String })
-  userId!: string;
+  @ApiProperty({ description: '전화번호', type: String })
+  phoneNumber;
 
   @IsNotEmpty()
   @IsString()

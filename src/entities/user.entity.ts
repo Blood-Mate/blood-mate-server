@@ -1,3 +1,4 @@
+import { BloodType } from 'src/types/enums';
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -6,17 +7,17 @@ export class User extends BaseEntity {
   id!: number;
 
   @Column({ unique: true })
-  userId: string;
-
-  @Column({ nullable: true })
-  email!: string;
+  phoneNumber!: string;
 
   @Column()
   password!: string;
 
-  @Column({ nullable: true })
-  refreshToken: string;
+  @Column()
+  name!: string;
 
   @Column({ nullable: true })
-  provider: string;
+  bloodType: BloodType;
+
+  @Column({ nullable: true })
+  refreshToken: string;
 }
