@@ -1,16 +1,18 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { PrivatePost } from './private-post.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class PrivatePostShare extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
-  senderId!: number;
+  @ManyToOne(() => User, (user) => user.sentPostShares)
+  sender!: User;
 
-  @Column()
-  receiverId!: number;
+  @ManyToOne(() => User, (user) => user.receivedPostShares)
+  receiver!: User;
 
-  @Column()
-  postId!: number;
+  @ManyToOne(() => PrivatePost, (privatePost) => privatePost.shares)
+  post!: PrivatePost;
 }

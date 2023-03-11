@@ -1,13 +1,17 @@
 import { Relationship } from 'src/types/enums';
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from './user.entity';
 
 @Entity()
 export class Contact extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
-
-  @Column()
-  userId!: number;
 
   @Column()
   name!: string;
@@ -20,4 +24,7 @@ export class Contact extends BaseEntity {
 
   @Column({ default: true })
   isSendingTarget!: boolean;
+
+  @ManyToOne(() => User, (user) => user.contacts)
+  user: User;
 }

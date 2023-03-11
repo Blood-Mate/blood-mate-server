@@ -4,16 +4,16 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
+import { User } from './user.entity';
 
 @Entity()
 export class PublicPost extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
-
-  @Column()
-  userId!: number;
 
   @Column()
   bloodType!: BloodType;
@@ -42,9 +42,12 @@ export class PublicPost extends BaseEntity {
   @CreateDateColumn()
   createdAt!: Date;
 
-  @Column({ nullable: true })
+  @UpdateDateColumn({ nullable: true })
   updatedAt: Date;
 
   @Column({ default: false })
   expired!: boolean;
+
+  @ManyToOne(() => User, (user) => user.publicPosts)
+  user: User;
 }
