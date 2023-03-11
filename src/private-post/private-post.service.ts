@@ -7,6 +7,9 @@ import { RepostPrivatePostDto } from './dto/repost-private-post.dto';
 import { PrivatePost } from 'src/entities/private-post.entity';
 import { User } from 'src/entities/user.entity';
 import { UserRepository } from 'src/repositories/user.repository';
+import { UpdateContentDto } from './dto/update-content.dto';
+import { UpdateFinishedStateDto } from './dto/update-finished-state.dto';
+import { DeletePrivatePostDto } from './dto/delete-private-post.dto';
 
 @Injectable()
 export class PrivatePostService {
@@ -56,7 +59,7 @@ export class PrivatePostService {
   async repostPrivatePostWithAutoSharing(
     user: User,
     repostPrivatePostDto: RepostPrivatePostDto,
-  ) {
+  ): Promise<void> {
     const { content, originId, currentDepth } = repostPrivatePostDto;
     if (currentDepth > 1) {
       throw new BadRequestException(
@@ -75,7 +78,10 @@ export class PrivatePostService {
     this.shareToAllSendableContact(user, repost);
   }
 
-  async shareToAllSendableContact(user: User, post: PrivatePost) {
+  async shareToAllSendableContact(
+    user: User,
+    post: PrivatePost,
+  ): Promise<void> {
     // Share above post to all sendable contact
     // Checked sendable and joined member
     const sendableContacts =
@@ -92,5 +98,37 @@ export class PrivatePostService {
         );
       }
     });
+  }
+
+  async isPostOwner(userId: number, postId: number): Promise<boolean> {
+    const post = await this.privatePostRepository.findPostByPostId(postId);
+    return post.user.id === userId;
+  }
+
+  async updateContent(user: User, updateContentDto: UpdateContentDto) {
+    const { postId, content } = updateContentDto;
+    if (this.isPostOwner(user.id, postId)) {
+    }
+    await this.privatePostRepository.updateContent(postId, content);
+  }
+
+  async updateFinishedState(
+    user: User,
+    updateFinishedStateDto: UpdateFinishedStateDto,
+  ) {
+    const { postId, isFinished } = updateFinishedStateDto;
+    if (this.isPostOwner(user.id, postId)) {
+      await this.privatePostRepository.updateFinishedState(postId, isFinished);
+    }
+  }
+
+  async deletePrivatePost(
+    user: User,
+    deletePrivatePostDto: DeletePrivatePostDto,
+  ) {
+    const { postId } = deletePrivatePostDto;
+    if (this.isPostOwner(user.id, postId)) {
+      await this.privatePostRepository.deletePrivatePost(postId);
+    }
   }
 }

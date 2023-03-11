@@ -15,6 +15,10 @@ import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { RepostPrivatePostDto } from './dto/repost-private-post.dto';
 import { AuthUser } from 'src/auth/decorator/auth-user.docrator';
 import { User } from 'src/entities/user.entity';
+import { UpdateContentDto } from './dto/update-content.dto';
+import { UpdateFinishedStateDto } from './dto/update-finished-state.dto';
+import { Query } from 'typeorm/driver/Query';
+import { DeletePrivatePostDto } from './dto/delete-private-post.dto';
 
 @Controller('private-post')
 export class PrivatePostController {
@@ -59,6 +63,51 @@ export class PrivatePostController {
     return this.privatePostService.repostPrivatePostWithAutoSharing(
       user,
       repostPrivatePostDto,
+    );
+  }
+
+  @ApiBearerAuth()
+  @Patch('/content')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '지인지정헌혈 포스팅 내용 수정',
+  })
+  updateContent(
+    @Body() updateContentDto: UpdateContentDto,
+    @AuthUser() user: User,
+  ) {
+    return this.privatePostService.updateContent(user, updateContentDto);
+  }
+
+  @ApiBearerAuth()
+  @Patch('/finished')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '지인지정헌혈 완료상태 변경',
+  })
+  updateFinishedState(
+    @Body() updateFinishedStateDto: UpdateFinishedStateDto,
+    @AuthUser() user: User,
+  ) {
+    return this.privatePostService.updateFinishedState(
+      user,
+      updateFinishedStateDto,
+    );
+  }
+
+  @ApiBearerAuth()
+  @Delete('/content')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '지인지정헌혈 완료상태 변경',
+  })
+  deletePrivatePost(
+    @Body() deletePrivatePostDto: DeletePrivatePostDto,
+    @AuthUser() user: User,
+  ) {
+    return this.privatePostService.deletePrivatePost(
+      user,
+      deletePrivatePostDto,
     );
   }
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PrivatePost } from 'src/entities/private-post.entity';
 import { User } from 'src/entities/user.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 
 @Injectable()
 export class PrivatePostRepository extends Repository<PrivatePost> {
@@ -44,5 +44,24 @@ export class PrivatePostRepository extends Repository<PrivatePost> {
       depth: currentDepth + 1,
     });
     return await this.repository.save(repost);
+  }
+
+  async updateContent(postId: number, content: string): Promise<PrivatePost> {
+    const post = await this.findPostByPostId(postId);
+    post.content = content;
+    return await this.repository.save(post);
+  }
+
+  async updateFinishedState(
+    postId: number,
+    isFinished: boolean,
+  ): Promise<PrivatePost> {
+    const post = await this.findPostByPostId(postId);
+    post.isFinished = isFinished;
+    return await this.repository.save(post);
+  }
+
+  async deletePrivatePost(postId): Promise<DeleteResult> {
+    return this.repository.delete(postId);
   }
 }
