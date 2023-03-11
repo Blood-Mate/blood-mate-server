@@ -20,6 +20,7 @@ async function bootstrap() {
     .setTitle('Blood-Mate Server')
     .setDescription('Blood-Mate API Description')
     .setVersion('1.0.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
