@@ -9,6 +9,7 @@ import { PrivatePostShare } from 'src/entities/private-post-share.entity';
 import { PrivatePost } from 'src/entities/private-post.entity';
 import { PublicPost } from 'src/entities/public-post.entity';
 import { User } from 'src/entities/user.entity';
+import { PrivatePostModule } from 'src/private-post/private-post.module';
 import { UserModule } from 'src/user/user.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -36,6 +37,7 @@ import { AppService } from './app.service';
     AuthModule,
     UserModule,
     ContactModule,
+    PrivatePostModule,
   ],
   controllers: [AppController],
   providers: [AppService],
