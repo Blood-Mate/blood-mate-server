@@ -35,6 +35,7 @@ import { AppService } from './app.service';
     }),
     AuthModule,
     UserModule,
+    ContactModule,
   ],
   controllers: [AppController],
   providers: [AppService],
