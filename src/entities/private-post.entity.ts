@@ -18,7 +18,7 @@ export class PrivatePost extends BaseEntity {
   originId!: number;
 
   @Column('text')
-  content!: string[];
+  content!: string;
 
   @Column({ type: 'int' })
   depth!: number;
