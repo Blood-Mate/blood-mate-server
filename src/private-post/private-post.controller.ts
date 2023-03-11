@@ -41,7 +41,7 @@ export class PrivatePostController {
     @AuthUser() user: User,
   ) {
     return this.privatePostService.postPrivatePostWithAutoSharing(
-      user.id,
+      user,
       postPrivatePostDto,
     );
   }
@@ -57,7 +57,7 @@ export class PrivatePostController {
     @AuthUser() user: User,
   ) {
     return this.privatePostService.repostPrivatePostWithAutoSharing(
-      user.id,
+      user,
       repostPrivatePostDto,
     );
   }

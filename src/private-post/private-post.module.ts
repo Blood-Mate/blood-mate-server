@@ -5,9 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Contact } from 'src/entities/contact.entity';
 import { PrivatePost } from 'src/entities/private-post.entity';
 import { PrivatePostShare } from 'src/entities/private-post-share.entity';
+import { User } from 'src/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Contact, PrivatePost, PrivatePostShare])],
+  imports: [
+    TypeOrmModule.forFeature([Contact, PrivatePost, PrivatePostShare, User]),
+  ],
   controllers: [PrivatePostController],
   providers: [PrivatePostService],
 })
