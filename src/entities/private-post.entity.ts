@@ -1,4 +1,13 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { PrivatePostShare } from './private-post-share.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class PrivatePost extends BaseEntity {
@@ -8,12 +17,21 @@ export class PrivatePost extends BaseEntity {
   @Column()
   originId!: number;
 
-  @Column()
-  userId!: number;
-
   @Column('text', { array: true })
   content!: string[];
 
   @Column({ type: 'int' })
   depth!: number;
+
+  @Column({ default: false })
+  isFinished!: boolean;
+
+  @ManyToOne(() => User, (user) => user.privatePosts)
+  user!: User;
+
+  @OneToMany(
+    () => PrivatePostShare,
+    (privatePostShare) => privatePostShare.post,
+  )
+  shares!: PrivatePostShare[];
 }

@@ -1,13 +1,14 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import { User } from './user.entity';
 
 @Entity()
 export class Guardian extends BaseEntity {
   @PrimaryColumn()
   id!: number;
 
-  @Column()
-  requestorId!: number;
+  @ManyToOne(() => User, (user) => user.sentGuardianRequests)
+  requestor!: User;
 
-  @Column()
-  guardianId!: number;
+  @ManyToOne(() => User, (user) => user.receivedGuardianRequests)
+  guardian!: User;
 }
