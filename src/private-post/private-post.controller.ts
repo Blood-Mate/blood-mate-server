@@ -4,7 +4,6 @@ import {
   Post,
   Body,
   Patch,
-  Param,
   Delete,
   UseGuards,
 } from '@nestjs/common';
@@ -17,7 +16,6 @@ import { AuthUser } from 'src/auth/decorator/auth-user.docrator';
 import { User } from 'src/entities/user.entity';
 import { UpdateContentDto } from './dto/update-content.dto';
 import { UpdateFinishedStateDto } from './dto/update-finished-state.dto';
-import { Query } from 'typeorm/driver/Query';
 import { DeletePrivatePostDto } from './dto/delete-private-post.dto';
 
 @Controller('private-post')
