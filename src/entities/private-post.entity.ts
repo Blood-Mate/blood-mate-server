@@ -1,5 +1,6 @@
 import {
   BaseEntity,
+  BeforeInsert,
   Column,
   Entity,
   ManyToOne,
@@ -34,4 +35,9 @@ export class PrivatePost extends BaseEntity {
     (privatePostShare) => privatePostShare.post,
   )
   shares!: PrivatePostShare[];
+
+  @BeforeInsert()
+  initializeMyValue() {
+    this.originId = -1;
+  }
 }
