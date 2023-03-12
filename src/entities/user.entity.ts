@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Contact } from './contact.entity';
-import { Guardian } from './guardian.entity';
+import { GuardianConnect } from './guardian-connect.entity';
 import { PrivatePostShare } from './private-post-share.entity';
 import { PrivatePost } from './private-post.entity';
 import { PublicPost } from './public-post.entity';
@@ -41,11 +41,17 @@ export class User extends BaseEntity {
   @OneToMany(() => Contact, (contact) => contact.user)
   contacts: Contact[];
 
-  @OneToMany(() => Guardian, (guardian) => guardian.requestor)
-  sentGuardianRequests: Guardian[];
+  @OneToMany(
+    () => GuardianConnect,
+    (guardianConnect) => guardianConnect.requestor,
+  )
+  sentGuardianRequests: GuardianConnect[];
 
-  @OneToMany(() => Guardian, (guardian) => guardian.guardian)
-  receivedGuardianRequests: Guardian[];
+  @OneToMany(
+    () => GuardianConnect,
+    (guardianConnect) => guardianConnect.guardian,
+  )
+  receivedGuardianRequests: GuardianConnect[];
 
   @OneToMany(() => PrivatePostShare, (share) => share.sender)
   sentPostShares: PrivatePostShare[];

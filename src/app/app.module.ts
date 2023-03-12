@@ -4,11 +4,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from 'src/auth/auth.module';
 import { ContactModule } from 'src/contact/contact.module';
 import { Contact } from 'src/entities/contact.entity';
-import { Guardian } from 'src/entities/guardian.entity';
+import { GuardianConnect } from 'src/entities/guardian-connect.entity';
 import { PrivatePostShare } from 'src/entities/private-post-share.entity';
 import { PrivatePost } from 'src/entities/private-post.entity';
 import { PublicPost } from 'src/entities/public-post.entity';
 import { User } from 'src/entities/user.entity';
+import { GuardianModule } from 'src/guardian/guardian.module';
 import { PrivatePostModule } from 'src/private-post/private-post.module';
 import { UserModule } from 'src/user/user.module';
 import { AppController } from './app.controller';
@@ -30,7 +31,7 @@ import { AppService } from './app.service';
         PublicPost,
         PrivatePost,
         PrivatePostShare,
-        Guardian,
+        GuardianConnect,
       ],
       synchronize: true,
     }),
@@ -38,6 +39,7 @@ import { AppService } from './app.service';
     UserModule,
     ContactModule,
     PrivatePostModule,
+    GuardianModule,
   ],
   controllers: [AppController],
   providers: [AppService],
