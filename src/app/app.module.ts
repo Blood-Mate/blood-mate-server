@@ -18,7 +18,7 @@ import { AppService } from './app.service';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ envFilePath: '.development.env', isGlobal: true }),
+    ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -34,7 +34,7 @@ import { AppService } from './app.service';
         PrivatePostShare,
         GuardianConnect,
       ],
-      synchronize: true,
+      synchronize: false,
     }),
     AuthModule,
     UserModule,
