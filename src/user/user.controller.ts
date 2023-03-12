@@ -3,9 +3,8 @@ import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthUser } from 'src/auth/decorator/auth-user.docrator';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { User } from 'src/entities/user.entity';
-import { ChangeBloodTypeDto } from './dto/change-bloodtype.dto';
-import { ChangeUserNameDto } from './dto/change-username.dto';
-import { GetUserInfoDto } from './dto/get-user-info';
+import { GetUserInfoDto } from './dto/get-user-info.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -21,27 +20,13 @@ export class UserController {
   }
 
   @ApiBearerAuth()
-  @Patch('/name')
+  @Patch('/')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: '유저 이름 변경' })
-  async changeUserName(
-    @Body() changeUserNameDto: ChangeUserNameDto,
+  @ApiOperation({ summary: '유저 정보 변경' })
+  async updateUser(
+    @Body() updateUserDto: UpdateUserDto,
     @AuthUser() user: User,
   ) {
-    return this.userService.changeUserName(user.id, changeUserNameDto.name);
-  }
-
-  @ApiBearerAuth()
-  @Patch('/blood-type')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: '유저 혈액형 변경' })
-  async changeBloodType(
-    @Body() changeBloodTypeDto: ChangeBloodTypeDto,
-    @AuthUser() user: User,
-  ) {
-    return this.userService.changeBloodType(
-      user.id,
-      changeBloodTypeDto.bloodType,
-    );
+    return this.userService.updateUser(user.id, updateUserDto);
   }
 }
