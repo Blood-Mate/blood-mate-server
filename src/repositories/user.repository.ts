@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { BloodType } from 'src/types/enums';
+import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -40,25 +41,21 @@ export class UserRepository extends Repository<User> {
     return this.repository.findOne({ where: { phoneNumber } });
   }
 
-  async updateUserName(id: number, name: string): Promise<void> {
-    const user = await this.findUserById(id);
-
-    user.name = name;
-
-    try {
-      await this.repository.save(user);
-    } catch (e) {
-      throw e;
-    }
+  async getUserWithPosts(id: number): Promise<User> {
+    return this.repository.findOne({
+      where: { id },
+      relations: {
+        publicPosts: true,
+        privatePosts: true,
+      },
+    });
   }
 
-  async updateBloodType(id: number, bloodType: BloodType): Promise<void> {
+  async updateUser(id: number, updateDto: UpdateUserDto): Promise<void> {
     const user = await this.findUserById(id);
 
-    user.bloodType = bloodType;
-
     try {
-      await this.repository.save(user);
+      await this.repository.save({ ...user, ...updateDto });
     } catch (e) {
       throw e;
     }
