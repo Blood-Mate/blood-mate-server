@@ -40,6 +40,16 @@ export class UserRepository extends Repository<User> {
     return this.repository.findOne({ where: { phoneNumber } });
   }
 
+  async getUserWithPosts(id: number): Promise<User> {
+    return this.repository.findOne({
+      where: { id },
+      relations: {
+        publicPosts: true,
+        privatePosts: true,
+      },
+    });
+  }
+
   async updateUserName(id: number, name: string): Promise<void> {
     const user = await this.findUserById(id);
 
