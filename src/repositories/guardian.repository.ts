@@ -40,6 +40,18 @@ export class GuardianRepository extends Repository<Guardian> {
     });
   }
 
+  async findByRequestorAndGuardian(
+    requestorId: number,
+    guardianId,
+  ): Promise<Guardian> {
+    return this.repository.findOne({
+      where: {
+        requestor: { id: requestorId },
+        guardian: { id: guardianId },
+      },
+    });
+  }
+
   async deleteGuardian(requestorId: number, guardianId): Promise<DeleteResult> {
     return this.repository.delete({
       requestor: { id: requestorId },

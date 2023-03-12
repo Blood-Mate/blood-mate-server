@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { User } from 'src/entities/user.entity';
 import { GuardianRepository } from 'src/repositories/guardian.repository';
 import { UserRepository } from 'src/repositories/user.repository';
@@ -12,6 +16,16 @@ export class GuardianService {
     private readonly guardianRepository: GuardianRepository,
   ) {}
   async addGuardian(user: User, counterpartId: number): Promise<void> {
+    const guardianConnect =
+      await this.guardianRepository.findByRequestorAndGuardian(
+        user.id,
+        counterpartId,
+      );
+
+    if (guardianConnect) {
+      throw new BadRequestException('The counterpart is already your guardian');
+    }
+
     const counterpart = await this.userRepository.findUserById(counterpartId);
 
     return this.guardianRepository.createGuardian(user, counterpart);
