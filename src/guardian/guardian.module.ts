@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Guardian } from 'src/entities/guardian.entity';
+import { GuardianConnect } from 'src/entities/guardian-connect.entity';
 import { User } from 'src/entities/user.entity';
-import { GuardianRepository } from 'src/repositories/guardian.repository';
+import { GuardianConnectRepository } from 'src/repositories/guardian-connect.repository';
 import { UserRepository } from 'src/repositories/user.repository';
 import { GuardianController } from './guardian.controller';
 import { GuardianService } from './guardian.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Guardian])],
+  imports: [TypeOrmModule.forFeature([User, GuardianConnect])],
   controllers: [GuardianController],
-  providers: [GuardianService, UserRepository, GuardianRepository],
+  providers: [GuardianService, UserRepository, GuardianConnectRepository],
 })
 export class GuardianModule {}

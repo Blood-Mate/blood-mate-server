@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Guardian } from 'src/entities/guardian.entity';
+import { GuardianConnect } from 'src/entities/guardian-connect.entity';
 import { BloodType } from 'src/types/enums';
 
 export class GetGuardianRequestorDto {
-  @ApiProperty({ description: '보호자 요청 id', type: Number })
+  @ApiProperty({ description: '보호자 연결 id', type: Number })
   id!: number;
 
   @ApiProperty({ description: '요청자 유저 id', type: Number })
@@ -18,10 +18,10 @@ export class GetGuardianRequestorDto {
   @ApiProperty({ description: '혈액형', enum: BloodType, nullable: true })
   bloodType!: BloodType | null;
 
-  static of(guardian: Guardian): GetGuardianRequestorDto {
-    const { id, phoneNumber, name, bloodType } = guardian.requestor;
+  static of(connect: GuardianConnect): GetGuardianRequestorDto {
+    const { id, phoneNumber, name, bloodType } = connect.requestor;
     return {
-      id: guardian.id,
+      id: connect.id,
       requstorId: id,
       phoneNumber,
       name,

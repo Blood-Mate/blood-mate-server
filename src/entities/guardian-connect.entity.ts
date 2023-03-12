@@ -2,7 +2,7 @@ import { BaseEntity, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entity';
 
 @Entity()
-export class Guardian extends BaseEntity {
+export class GuardianConnect extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 

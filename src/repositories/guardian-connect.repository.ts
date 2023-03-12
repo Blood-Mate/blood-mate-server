@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Guardian } from 'src/entities/guardian.entity';
+import { GuardianConnect } from 'src/entities/guardian-connect.entity';
 import { User } from 'src/entities/user.entity';
 import { DeleteResult, Repository } from 'typeorm';
 
 @Injectable()
-export class GuardianRepository extends Repository<Guardian> {
+export class GuardianConnectRepository extends Repository<GuardianConnect> {
   constructor(
-    @InjectRepository(Guardian)
-    private readonly repository: Repository<Guardian>,
+    @InjectRepository(GuardianConnect)
+    private readonly repository: Repository<GuardianConnect>,
   ) {
     super(repository.target, repository.manager, repository.queryRunner);
   }
@@ -26,14 +26,14 @@ export class GuardianRepository extends Repository<Guardian> {
     }
   }
 
-  async findByRequestorId(requestorId: number): Promise<Guardian[]> {
+  async findByRequestorId(requestorId: number): Promise<GuardianConnect[]> {
     return this.repository.find({
       relations: { guardian: true },
       where: { requestor: { id: requestorId } },
     });
   }
 
-  async findByGuardianId(guardianId: number): Promise<Guardian[]> {
+  async findByGuardianId(guardianId: number): Promise<GuardianConnect[]> {
     return this.repository.find({
       relations: { requestor: true },
       where: { guardian: { id: guardianId } },
@@ -43,7 +43,7 @@ export class GuardianRepository extends Repository<Guardian> {
   async findByRequestorAndGuardian(
     requestorId: number,
     guardianId,
-  ): Promise<Guardian> {
+  ): Promise<GuardianConnect> {
     return this.repository.findOne({
       where: {
         requestor: { id: requestorId },

@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { User } from 'src/entities/user.entity';
-import { GuardianRepository } from 'src/repositories/guardian.repository';
+import { GuardianConnectRepository } from 'src/repositories/guardian-connect.repository';
 import { UserRepository } from 'src/repositories/user.repository';
 import { GetGuardianRequestorDto } from './dto/get-guardian-requestor.dto';
 import { GetGuardianDto } from './dto/get-guardian.dto';
@@ -13,11 +13,11 @@ import { GetGuardianDto } from './dto/get-guardian.dto';
 export class GuardianService {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly guardianRepository: GuardianRepository,
+    private readonly guardianConnectRepository: GuardianConnectRepository,
   ) {}
   async addGuardian(user: User, counterpartId: number): Promise<void> {
     const guardianConnect =
-      await this.guardianRepository.findByRequestorAndGuardian(
+      await this.guardianConnectRepository.findByRequestorAndGuardian(
         user.id,
         counterpartId,
       );
@@ -28,11 +28,13 @@ export class GuardianService {
 
     const counterpart = await this.userRepository.findUserById(counterpartId);
 
-    return this.guardianRepository.createGuardian(user, counterpart);
+    return this.guardianConnectRepository.createGuardian(user, counterpart);
   }
 
   async getGuardians(userId: number): Promise<GetGuardianDto[]> {
-    const guardians = await this.guardianRepository.findByRequestorId(userId);
+    const guardians = await this.guardianConnectRepository.findByRequestorId(
+      userId,
+    );
 
     return guardians.map((guardian) => GetGuardianDto.of(guardian));
   }
@@ -40,13 +42,15 @@ export class GuardianService {
   async getGuardianRequestors(
     userId: number,
   ): Promise<GetGuardianRequestorDto[]> {
-    const requestors = await this.guardianRepository.findByGuardianId(userId);
+    const requestors = await this.guardianConnectRepository.findByGuardianId(
+      userId,
+    );
 
     return requestors.map((requestor) => GetGuardianRequestorDto.of(requestor));
   }
 
   async deleteGuardian(userId: number, guardianId: number): Promise<void> {
-    const result = await this.guardianRepository.deleteGuardian(
+    const result = await this.guardianConnectRepository.deleteGuardian(
       userId,
       guardianId,
     );
