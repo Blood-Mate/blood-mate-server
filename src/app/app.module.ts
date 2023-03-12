@@ -11,6 +11,7 @@ import { PublicPost } from 'src/entities/public-post.entity';
 import { User } from 'src/entities/user.entity';
 import { GuardianModule } from 'src/guardian/guardian.module';
 import { PrivatePostModule } from 'src/private-post/private-post.module';
+import { PublicPostModule } from 'src/public-post/public-post.module';
 import { UserModule } from 'src/user/user.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -39,6 +40,7 @@ import { AppService } from './app.service';
     UserModule,
     ContactModule,
     PrivatePostModule,
+    PublicPostModule,
     GuardianModule,
   ],
   controllers: [AppController],
