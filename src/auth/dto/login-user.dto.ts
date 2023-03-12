@@ -8,8 +8,9 @@ import {
 
 export class LoginUserDto {
   @IsNotEmpty()
+  @IsString()
   @ApiProperty({ description: '전화번호', type: String })
-  phoneNumber;
+  phoneNumber!: string;
 
   @IsNotEmpty()
   @IsString()

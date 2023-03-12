@@ -10,6 +10,7 @@ import { BloodType } from 'src/types/enums';
 
 export class RegisterUserDto {
   @IsNotEmpty()
+  @IsString()
   @ApiProperty({ description: '전화번호', type: String })
   phoneNumber!: string;
 
