@@ -1,4 +1,4 @@
-import { BloodDonationType, BloodType } from 'src/types/enums';
+import { BloodDonationType, BloodType, Region } from 'src/types/enums';
 import {
   BaseEntity,
   Column,
@@ -6,7 +6,6 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 
@@ -19,10 +18,10 @@ export class PublicPost extends BaseEntity {
   bloodType!: BloodType;
 
   @Column()
-  bloodDonatonType!: BloodDonationType;
+  bloodDonationType!: BloodDonationType;
 
   @Column()
-  location!: string;
+  region!: Region;
 
   @Column({ type: 'decimal' })
   latitude!: number;
@@ -33,8 +32,8 @@ export class PublicPost extends BaseEntity {
   @Column()
   title!: string;
 
-  @Column('text', { array: true })
-  content!: string[];
+  @Column('text')
+  content!: string;
 
   @Column({ nullable: true })
   imageUrl: string;
@@ -42,8 +41,8 @@ export class PublicPost extends BaseEntity {
   @CreateDateColumn()
   createdAt!: Date;
 
-  @UpdateDateColumn({ nullable: true })
-  updatedAt: Date;
+  @Column({ type: Date })
+  bumpAt: Date;
 
   @Column({ default: false })
   expired!: boolean;
