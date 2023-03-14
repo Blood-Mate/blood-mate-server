@@ -16,6 +16,16 @@ export class GuardianService {
     private readonly guardianConnectRepository: GuardianConnectRepository,
   ) {}
   async addGuardian(user: User, counterpartId: number): Promise<void> {
+    const guardians = await this.guardianConnectRepository.findByRequestorId(
+      user.id,
+    );
+
+    if (guardians.length >= 4) {
+      throw new BadRequestException(
+        'The number of guardians cannot exceed four',
+      );
+    }
+
     const guardianConnect =
       await this.guardianConnectRepository.findByRequestorAndGuardian(
         user.id,
