@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -10,12 +11,13 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation } from '@nestjs/swagger';
+import { validate } from 'class-validator';
 import { AuthUser } from 'src/auth/decorator/auth-user.docrator';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { User } from 'src/entities/user.entity';
 import { ContactService } from './contact.service';
-import { AddContactDto } from './dto/add-contact.dto';
+import { AddContactDto, AddContactListDto } from './dto/add-contact.dto';
 import { ChangeSendingTargetDto } from './dto/change-sending-target.dto';
 import { ContactListDto } from './dto/contact.dto';
 
@@ -26,13 +28,13 @@ export class ContactController {
   @ApiBearerAuth()
   @Post('/')
   @UseGuards(JwtAuthGuard)
+  @ApiBody({ type: AddContactListDto })
   @ApiOperation({ summary: '지인 연락처 등록' })
   async addContacts(
-    @Body(new ParseArrayPipe({ items: AddContactDto }))
-    contactsDto: AddContactDto[],
+    @Body() addContactListDto: AddContactListDto,
     @AuthUser() user: User,
   ) {
-    return this.contactService.addContacts(user, contactsDto);
+    return this.contactService.addContacts(user, addContactListDto.contacts);
   }
 
   @ApiBearerAuth()
