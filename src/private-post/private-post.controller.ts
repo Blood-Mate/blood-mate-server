@@ -17,6 +17,7 @@ import { User } from 'src/entities/user.entity';
 import { UpdateContentDto } from './dto/update-content.dto';
 import { UpdateFinishedStateDto } from './dto/update-finished-state.dto';
 import { DeletePrivatePostDto } from './dto/delete-private-post.dto';
+import { PostWardPostDto } from './dto/post-ward-post.dto';
 
 @Controller('private-post')
 export class PrivatePostController {
@@ -30,6 +31,22 @@ export class PrivatePostController {
   })
   getSharedPrivatePost(@AuthUser() user: User) {
     return this.privatePostService.getSharedPrivatePost(user.id);
+  }
+
+  @ApiBearerAuth()
+  @Post('/guardian')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '(보호자)지인지정헌혈 포스팅 최초작성 및 연락처기반 자동 공유',
+  })
+  postWardPostWithAutoSharing(
+    @Body() postWardPostDto: PostWardPostDto,
+    @AuthUser() user: User,
+  ) {
+    return this.privatePostService.postWardPostWithAutoSharing(
+      user,
+      postWardPostDto,
+    );
   }
 
   @ApiBearerAuth()
@@ -94,10 +111,10 @@ export class PrivatePostController {
   }
 
   @ApiBearerAuth()
-  @Delete('/content')
+  @Delete('/')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '지인지정헌혈 완료상태 변경',
+    summary: '지인지정헌혈 게시글 삭제',
   })
   deletePrivatePost(
     @Body() deletePrivatePostDto: DeletePrivatePostDto,

@@ -10,6 +10,7 @@ import { UserRepository } from 'src/repositories/user.repository';
 import { UpdateContentDto } from './dto/update-content.dto';
 import { UpdateFinishedStateDto } from './dto/update-finished-state.dto';
 import { DeletePrivatePostDto } from './dto/delete-private-post.dto';
+import { PostWardPostDto } from './dto/post-ward-post.dto';
 
 @Injectable()
 export class PrivatePostService {
@@ -38,6 +39,15 @@ export class PrivatePostService {
       });
 
     return sharedPosts;
+  }
+
+  async postWardPostWithAutoSharing(
+    user: User,
+    postWardPostDto: PostWardPostDto,
+  ): Promise<void> {
+    const { content, wardId } = postWardPostDto;
+    const ward = await this.userRepository.findUserById(wardId);
+    return this.postPrivatePostWithAutoSharing(ward, { content });
   }
 
   async postPrivatePostWithAutoSharing(
