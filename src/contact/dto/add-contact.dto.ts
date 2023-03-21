@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsPhoneNumber,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 
 export class AddContactDto {
   @IsNotEmpty()
@@ -9,8 +15,12 @@ export class AddContactDto {
   name!: string;
 
   @IsNotEmpty()
-  @IsString()
-  @ApiProperty({ description: '지인 연락처', type: String })
+  @IsPhoneNumber()
+  @ApiProperty({
+    description: '지인 연락처',
+    example: '+821026265901',
+    type: String,
+  })
   phoneNumber!: string;
 }
 

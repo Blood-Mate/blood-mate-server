@@ -2,14 +2,19 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAlphanumeric,
   IsNotEmpty,
+  IsPhoneNumber,
   IsString,
   MaxLength,
 } from 'class-validator';
 
 export class LoginUserDto {
   @IsNotEmpty()
-  @IsString()
-  @ApiProperty({ description: '전화번호', type: String })
+  @IsPhoneNumber()
+  @ApiProperty({
+    description: '전화번호',
+    example: '+821026265901',
+    type: String,
+  })
   phoneNumber!: string;
 
   @IsNotEmpty()

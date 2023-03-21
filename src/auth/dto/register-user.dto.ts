@@ -3,6 +3,7 @@ import {
   IsAlphanumeric,
   IsEnum,
   IsNotEmpty,
+  IsPhoneNumber,
   IsString,
   MaxLength,
 } from 'class-validator';
@@ -10,8 +11,12 @@ import { BloodType } from 'src/types/enums';
 
 export class RegisterUserDto {
   @IsNotEmpty()
-  @IsString()
-  @ApiProperty({ description: '전화번호', type: String })
+  @IsPhoneNumber()
+  @ApiProperty({
+    description: '전화번호',
+    example: '+821026265901',
+    type: String,
+  })
   phoneNumber!: string;
 
   @IsNotEmpty()
