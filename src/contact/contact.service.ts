@@ -40,7 +40,7 @@ export class ContactService {
     return;
   }
 
-  async getContacts(userId: number): Promise<ContactListDto> {
+  async getContacts(userId: number): Promise<ContactDto[]> {
     const contacts = await this.contactRepository.getContacts(userId);
 
     const contactWithIsUser = await Promise.all(
@@ -53,7 +53,7 @@ export class ContactService {
       }),
     );
 
-    return { contacts: contactWithIsUser };
+    return contactWithIsUser;
   }
 
   async deleteContact(userId: number, contactId: number): Promise<void> {

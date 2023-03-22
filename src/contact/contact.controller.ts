@@ -19,7 +19,7 @@ import { User } from 'src/entities/user.entity';
 import { ContactService } from './contact.service';
 import { AddContactDto, AddContactListDto } from './dto/add-contact.dto';
 import { ChangeSendingTargetDto } from './dto/change-sending-target.dto';
-import { ContactListDto } from './dto/contact.dto';
+import { ContactDto } from './dto/contact.dto';
 
 @Controller('contact')
 export class ContactController {
@@ -41,7 +41,7 @@ export class ContactController {
   @Get('/')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '지인 연락처 조회' })
-  async getContacts(@AuthUser() user: User): Promise<ContactListDto> {
+  async getContacts(@AuthUser() user: User): Promise<ContactDto[]> {
     return this.contactService.getContacts(user.id);
   }
 
