@@ -7,7 +7,7 @@ export class GetGuardianRequestorDto {
   id!: number;
 
   @ApiProperty({ description: '요청자 유저 id', type: Number })
-  requstorId!: number;
+  requestorId!: number;
 
   @ApiProperty({ description: '전화번호', type: String })
   phoneNumber!: string;
@@ -22,7 +22,7 @@ export class GetGuardianRequestorDto {
     const { id, phoneNumber, name, bloodType } = connect.requestor;
     return {
       id: connect.id,
-      requstorId: id,
+      requestorId: id,
       phoneNumber,
       name,
       bloodType,
