@@ -15,7 +15,7 @@ export class GuardianService {
     private readonly userRepository: UserRepository,
     private readonly guardianConnectRepository: GuardianConnectRepository,
   ) {}
-  async addGuardian(user: User, counterpartId: number): Promise<void> {
+  async addGuardian(user: User, targetPhoneNumber: string): Promise<void> {
     const guardians = await this.guardianConnectRepository.findByRequestorId(
       user.id,
     );
@@ -26,17 +26,25 @@ export class GuardianService {
       );
     }
 
+    const target = await this.userRepository.findUserByPhoneNumber(
+      targetPhoneNumber,
+    );
+
+    if (!target) {
+      throw new NotFoundException('The counterpart is not found');
+    }
+
     const guardianConnect =
       await this.guardianConnectRepository.findByRequestorAndGuardian(
         user.id,
-        counterpartId,
+        target.id,
       );
 
     if (guardianConnect) {
       throw new BadRequestException('The counterpart is already your guardian');
     }
 
-    const counterpart = await this.userRepository.findUserById(counterpartId);
+    const counterpart = await this.userRepository.findUserById(target.id);
 
     return this.guardianConnectRepository.createGuardian(user, counterpart);
   }

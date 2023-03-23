@@ -21,7 +21,7 @@ export class GuardianController {
     @Body() addGuardianDto: AddGuardianDto,
     @AuthUser() user: User,
   ): Promise<void> {
-    return this.guardianService.addGuardian(user, addGuardianDto.id);
+    return this.guardianService.addGuardian(user, addGuardianDto.phoneNumber);
   }
 
   @ApiBearerAuth()

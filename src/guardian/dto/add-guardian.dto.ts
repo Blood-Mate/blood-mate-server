@@ -1,8 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import { IsNotEmpty, IsPhoneNumber } from 'class-validator';
 
 export class AddGuardianDto {
-  @IsNumber()
-  @ApiProperty({ description: '보호자로 등록할 유저 id', type: Number })
-  id!: number;
+  @IsNotEmpty()
+  @IsPhoneNumber()
+  @ApiProperty({
+    description: '보호자 연락처',
+    example: '+821012341234',
+    type: String,
+  })
+  phoneNumber!: string;
 }
