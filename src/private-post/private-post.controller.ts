@@ -18,6 +18,7 @@ import { UpdateContentDto } from './dto/update-content.dto';
 import { UpdateFinishedStateDto } from './dto/update-finished-state.dto';
 import { DeletePrivatePostDto } from './dto/delete-private-post.dto';
 import { PostWardPostDto } from './dto/post-ward-post.dto';
+import { PrivatePost } from 'src/entities/private-post.entity';
 
 @Controller('private-post')
 export class PrivatePostController {
@@ -31,6 +32,16 @@ export class PrivatePostController {
   })
   getSharedPrivatePost(@AuthUser() user: User) {
     return this.privatePostService.getSharedPrivatePost(user.id);
+  }
+
+  @ApiBearerAuth()
+  @Get('/me')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '자기 자신이 쓴 지인지정헌혈 포스팅 가져오기',
+  })
+  getMyPrivatePost(@AuthUser() user: User): Promise<PrivatePost[]> {
+    return this.privatePostService.getMyPrivatePost(user.id);
   }
 
   @ApiBearerAuth()

@@ -41,6 +41,10 @@ export class PrivatePostService {
     return sharedPosts;
   }
 
+  async getMyPrivatePost(userId: number): Promise<PrivatePost[]> {
+    return this.privatePostRepository.findByUserId(userId);
+  }
+
   async postWardPostWithAutoSharing(
     user: User,
     postWardPostDto: PostWardPostDto,
