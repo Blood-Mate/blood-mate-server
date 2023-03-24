@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { User } from 'src/entities/user.entity';
+import { ContactRepository } from 'src/repositories/contact.repository';
 import { GuardianConnectRepository } from 'src/repositories/guardian-connect.repository';
 import { UserRepository } from 'src/repositories/user.repository';
 import { GetGuardianRequestorDto } from './dto/get-guardian-requestor.dto';
@@ -11,8 +12,8 @@ import { GetGuardianDto } from './dto/get-guardian.dto';
 
 @Injectable()
 export class GuardianService {
-  contactRepository: any;
   constructor(
+    private readonly contactRepository: ContactRepository,
     private readonly userRepository: UserRepository,
     private readonly guardianConnectRepository: GuardianConnectRepository,
   ) {}
@@ -50,18 +51,22 @@ export class GuardianService {
     return this.guardianConnectRepository.createGuardian(user, counterpart);
   }
 
-  async getGuardians(userId: number): Promise<GetGuardianDto[]> {
+  async getGuardians(userId: number): Promise<Promise<GetGuardianDto>[]> {
     const guardianConnections =
       await this.guardianConnectRepository.findByRequestorId(userId);
 
-    return guardianConnections.map((guardianConnection) => {
-      const returnedData = GetGuardianDto.of(guardianConnection);
-      returnedData.name = this.contactRepository.findContactByPhoneNumber(
-        userId,
-        guardianConnection.guardian.phoneNumber,
+    const guardians = guardianConnections.map(async (guardianConnection) => {
+      const guardian = GetGuardianDto.of(guardianConnection);
+      guardian.name = (
+        await this.contactRepository.findContactByPhoneNumber(
+          userId,
+          guardianConnection.guardian.phoneNumber,
+        )
       ).name;
-      return returnedData;
+      return guardian;
     });
+
+    return guardians;
   }
 
   async getGuardianRequestors(
