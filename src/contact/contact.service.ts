@@ -1,15 +1,11 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Contact } from 'src/entities/contact.entity';
 import { User } from 'src/entities/user.entity';
 import { ContactRepository } from 'src/repositories/contact.repository';
 import { UserRepository } from 'src/repositories/user.repository';
 import { AddContactDto } from './dto/add-contact.dto';
 import { ChangeSendingTargetDto } from './dto/change-sending-target.dto';
-import { ContactDto, ContactListDto } from './dto/contact.dto';
+import { ContactDto } from './dto/contact.dto';
 
 @Injectable()
 export class ContactService {
@@ -28,11 +24,7 @@ export class ContactService {
           phoneNumber,
         );
 
-      if (contactExist) {
-        throw new ConflictException(
-          `The contact ${phoneNumber} already exists`,
-        );
-      }
+      if (contactExist) return;
 
       await this.contactRepository.createContact(user, name, phoneNumber);
     });
