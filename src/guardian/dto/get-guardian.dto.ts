@@ -3,7 +3,7 @@ import { GuardianConnect } from 'src/entities/guardian-connect.entity';
 import { BloodType } from 'src/types/enums';
 
 export class GetGuardianDto {
-  @ApiProperty({ description: '보호자 연결 id', type: Number })
+  @ApiProperty({ description: 'id', type: Number })
   id!: number;
 
   @ApiProperty({ description: '보호자 id', type: Number })
@@ -19,12 +19,12 @@ export class GetGuardianDto {
   bloodType!: BloodType | null;
 
   static of(connect: GuardianConnect): GetGuardianDto {
-    const { id, phoneNumber, name, bloodType } = connect.guardian;
+    const { id, phoneNumber, bloodType } = connect.guardian;
     return {
       id: connect.id,
       guardianId: id,
       phoneNumber,
-      name,
+      name: null,
       bloodType,
     };
   }

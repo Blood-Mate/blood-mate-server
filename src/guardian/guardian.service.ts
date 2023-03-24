@@ -11,6 +11,7 @@ import { GetGuardianDto } from './dto/get-guardian.dto';
 
 @Injectable()
 export class GuardianService {
+  contactRepository: any;
   constructor(
     private readonly userRepository: UserRepository,
     private readonly guardianConnectRepository: GuardianConnectRepository,
@@ -50,11 +51,17 @@ export class GuardianService {
   }
 
   async getGuardians(userId: number): Promise<GetGuardianDto[]> {
-    const guardians = await this.guardianConnectRepository.findByRequestorId(
-      userId,
-    );
+    const guardianConnections =
+      await this.guardianConnectRepository.findByRequestorId(userId);
 
-    return guardians.map((guardian) => GetGuardianDto.of(guardian));
+    return guardianConnections.map((guardianConnection) => {
+      const returnedData = GetGuardianDto.of(guardianConnection);
+      returnedData.name = this.contactRepository.findContactByPhoneNumber(
+        userId,
+        guardianConnection.guardian.phoneNumber,
+      ).name;
+      return returnedData;
+    });
   }
 
   async getGuardianRequestors(
