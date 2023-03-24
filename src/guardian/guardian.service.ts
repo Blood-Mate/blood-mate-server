@@ -51,20 +51,22 @@ export class GuardianService {
     return this.guardianConnectRepository.createGuardian(user, counterpart);
   }
 
-  async getGuardians(userId: number): Promise<Promise<GetGuardianDto>[]> {
+  async getGuardians(userId: number): Promise<GetGuardianDto[]> {
     const guardianConnections =
       await this.guardianConnectRepository.findByRequestorId(userId);
 
-    const guardians = guardianConnections.map(async (guardianConnection) => {
-      const guardian = GetGuardianDto.of(guardianConnection);
-      guardian.name = (
-        await this.contactRepository.findContactByPhoneNumber(
-          userId,
-          guardianConnection.guardian.phoneNumber,
-        )
-      ).name;
-      return guardian;
-    });
+    const guardians = Promise.all(
+      guardianConnections.map(async (guardianConnection) => {
+        const guardian = GetGuardianDto.of(guardianConnection);
+        guardian.name = (
+          await this.contactRepository.findContactByPhoneNumber(
+            userId,
+            guardianConnection.guardian.phoneNumber,
+          )
+        ).name;
+        return guardian;
+      }),
+    );
 
     return guardians;
   }

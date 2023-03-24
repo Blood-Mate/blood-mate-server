@@ -28,9 +28,7 @@ export class GuardianController {
   @Get('/')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '보호자 조회' })
-  async getGuardians(
-    @AuthUser() user: User,
-  ): Promise<Promise<GetGuardianDto>[]> {
+  async getGuardians(@AuthUser() user: User): Promise<GetGuardianDto[]> {
     return this.guardianService.getGuardians(user.id);
   }
 
