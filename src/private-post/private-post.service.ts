@@ -28,17 +28,22 @@ export class PrivatePostService {
       );
 
     // Get shared posts
-    const sharedPosts = sharedLogs
-      .map((sharedLog) => {
-        return sharedLog.post;
-      })
-      // Filter finished posts
-      .filter((post) => {
-        if (post.isFinished) return false;
-        return true;
-      });
+    const sharedPosts = Promise.all(
+      sharedLogs.map(async (sharedLog) => {
+        const post = await this.privatePostRepository.findBySharedLogId(
+          sharedLog.id,
+        );
+        return post;
+      }),
+    );
 
-    return sharedPosts;
+    // Check expired status
+    const posts = (await sharedPosts).filter((post) => {
+      if (post.isFinished) return false;
+      return true;
+    });
+
+    return posts;
   }
 
   async getMyPrivatePost(userId: number): Promise<PrivatePost[]> {
@@ -115,8 +120,9 @@ export class PrivatePostService {
   }
 
   async isPostOwner(userId: number, postId: number): Promise<boolean> {
-    const post = await this.privatePostRepository.findPostByPostId(postId);
-    return post.user.id === userId;
+    const user = await this.userRepository.getUserWithPosts(postId);
+
+    return user.id === userId;
   }
 
   async updateContent(user: User, updateContentDto: UpdateContentDto) {

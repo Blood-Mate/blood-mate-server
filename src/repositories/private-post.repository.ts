@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { share } from 'rxjs';
 import { PrivatePost } from 'src/entities/private-post.entity';
 import { User } from 'src/entities/user.entity';
 import { DeleteResult, Repository } from 'typeorm';
@@ -18,6 +19,13 @@ export class PrivatePostRepository extends Repository<PrivatePost> {
       where: {
         id: postId,
       },
+    });
+  }
+
+  async findBySharedLogId(sharedLogId: number): Promise<PrivatePost> {
+    return this.repository.findOne({
+      relations: { shares: true },
+      where: { shares: { id: sharedLogId } },
     });
   }
 
