@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrivatePostShareRepository } from 'src/repositories/private-post-share.repository';
 import { PrivatePostRepository } from 'src/repositories/private-post.repository';
 import { ContactRepository } from 'src/repositories/contact.repository';
@@ -176,8 +181,21 @@ export class PrivatePostService {
     deletePrivatePostDto: DeletePrivatePostDto,
   ) {
     const { postId } = deletePrivatePostDto;
-    if (this.isPostOwner(user.id, postId)) {
-      await this.privatePostRepository.deletePrivatePost(postId);
+
+    const post = await this.privatePostRepository.findPostByPostId(postId);
+    if (!post) {
+      throw new NotFoundException('존재하지 않는 포스트입니다.');
     }
+    if (!this.isPostOwner(user.id, postId)) {
+      throw new ForbiddenException('본인의 포스트가 아닙니다.');
+    }
+
+    const sharedLogs = await this.privatePostShareRepository.findByPostId(
+      postId,
+    );
+    for (const log of sharedLogs) {
+      await this.privatePostShareRepository.deleteSharings(log.id);
+    }
+    await this.privatePostRepository.deletePrivatePost(postId);
   }
 }

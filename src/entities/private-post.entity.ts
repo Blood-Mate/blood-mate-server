@@ -2,6 +2,7 @@ import {
   BaseEntity,
   BeforeInsert,
   Column,
+  DeleteDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
@@ -29,6 +30,9 @@ export class PrivatePost extends BaseEntity {
 
   @ManyToOne(() => User, (user) => user.privatePosts)
   user!: User;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 
   @OneToMany(
     () => PrivatePostShare,

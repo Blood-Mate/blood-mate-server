@@ -22,6 +22,16 @@ export class PrivatePostShareRepository extends Repository<PrivatePostShare> {
     });
   }
 
+  async findByPostId(postId: number) {
+    return this.repository.find({
+      where: { post: { id: postId } },
+    });
+  }
+
+  async deleteSharings(id: number) {
+    return this.repository.delete(id);
+  }
+
   async createPrivatePostShare(
     user: User,
     receiver: User,
