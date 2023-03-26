@@ -11,6 +11,7 @@ import { UpdateContentDto } from './dto/update-content.dto';
 import { UpdateFinishedStateDto } from './dto/update-finished-state.dto';
 import { DeletePrivatePostDto } from './dto/delete-private-post.dto';
 import { PostWardPostDto } from './dto/post-ward-post.dto';
+import { Contact } from 'src/entities/contact.entity';
 
 @Injectable()
 export class PrivatePostService {
@@ -21,7 +22,7 @@ export class PrivatePostService {
     private readonly userRepository: UserRepository,
   ) {}
 
-  async getSharedPrivatePost(userId: number): Promise<PrivatePost[]> {
+  async getSharedPrivatePost(userId: number) {
     const sharedLogs =
       await this.privatePostShareRepository.findPrivatePostSharingsByUserId(
         userId,
@@ -33,15 +34,35 @@ export class PrivatePostService {
         const post = await this.privatePostRepository.findBySharedLogId(
           sharedLog.id,
         );
-        return post;
+        console.log(post);
+        // Add publisher field
+        const publisher = await this.contactRepository.getOneByPhoneNumber(
+          userId,
+          post.user.phoneNumber,
+        );
+        return { post, publisher };
       }),
     );
 
-    // Check expired status
-    const posts = (await sharedPosts).filter((post) => {
-      if (post.isFinished) return false;
+    // Filter finished posts.
+    const filteredPosts = (await sharedPosts).filter((data) => {
+      if (data.post.isFinished) return false;
       return true;
     });
+
+    // Add origin post field (if exists)
+    const posts = Promise.all(
+      filteredPosts.map(async (postData) => {
+        const originId = postData.post.originId;
+        if (originId != -1) {
+          const originPost = await this.privatePostRepository.findPostByPostId(
+            originId,
+          );
+          return { postData, originPost };
+        }
+        return postData;
+      }),
+    );
 
     return posts;
   }
@@ -140,6 +161,13 @@ export class PrivatePostService {
     if (this.isPostOwner(user.id, postId)) {
       await this.privatePostRepository.updateFinishedState(postId, isFinished);
     }
+    const respots = await this.privatePostRepository.findByOriginId(postId);
+    respots.forEach(async (respost) => {
+      return await this.privatePostRepository.updateFinishedState(
+        respost.id,
+        isFinished,
+      );
+    });
   }
 
   async deletePrivatePost(

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { share } from 'rxjs';
 import { PrivatePost } from 'src/entities/private-post.entity';
 import { User } from 'src/entities/user.entity';
 import { DeleteResult, Repository } from 'typeorm';
@@ -14,6 +13,14 @@ export class PrivatePostRepository extends Repository<PrivatePost> {
     super(repository.target, repository.manager, repository.queryRunner);
   }
 
+  async findByOriginId(originId: number): Promise<PrivatePost[]> {
+    return this.repository.find({
+      where: {
+        originId,
+      },
+    });
+  }
+
   async findPostByPostId(postId: number): Promise<PrivatePost> {
     return this.repository.findOne({
       where: {
@@ -22,10 +29,13 @@ export class PrivatePostRepository extends Repository<PrivatePost> {
     });
   }
 
-  async findBySharedLogId(sharedLogId: number): Promise<PrivatePost> {
+  async findBySharedLogId(sharedLogId: number) {
     return this.repository.findOne({
-      relations: { shares: true },
+      relations: { user: true },
       where: { shares: { id: sharedLogId } },
+      select: {
+        user: { id: true, phoneNumber: true },
+      },
     });
   }
 
@@ -41,6 +51,7 @@ export class PrivatePostRepository extends Repository<PrivatePost> {
       user,
       content,
       depth: 0,
+      originId: -1,
     });
     post.originId = post.id;
     return await this.repository.save(post);
@@ -52,11 +63,13 @@ export class PrivatePostRepository extends Repository<PrivatePost> {
     originId: number,
     currentDepth: number,
   ): Promise<PrivatePost> {
+    const originPost = await this.findPostByPostId(originId);
     const repost = await this.repository.create({
       user,
       content,
-      originId,
       depth: currentDepth + 1,
+      isFinished: originPost.isFinished,
+      originId: originId,
     });
     return await this.repository.save(repost);
   }

@@ -35,6 +35,15 @@ export class ContactRepository extends Repository<Contact> {
     return this.repository.find({ where: { user: { id: userId } } });
   }
 
+  async getOneByPhoneNumber(userId: number, phoneNumber: string) {
+    return this.repository.findOne({
+      where: {
+        user: { id: userId },
+        phoneNumber: phoneNumber,
+      },
+    });
+  }
+
   async findContactByPhoneNumber(
     userId: number,
     phoneNumber: string,
