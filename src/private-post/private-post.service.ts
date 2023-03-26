@@ -58,7 +58,8 @@ export class PrivatePostService {
           const originPost = await this.privatePostRepository.findPostByPostId(
             originId,
           );
-          return { postData, originPost };
+          const { post, publisher } = postData;
+          return { post, publisher, originPost };
         }
         return postData;
       }),
