@@ -10,6 +10,7 @@ RUN npm ci
 
 # typeorm-cli
 RUN npm i -g typeorm-cli
+RUN npm i -g pm2
 
 # Build
 COPY . .
@@ -17,4 +18,4 @@ RUN npm run build
 
 # Start deploying server
 EXPOSE $PORT
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start:prod"]
