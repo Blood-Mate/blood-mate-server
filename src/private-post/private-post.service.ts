@@ -148,8 +148,11 @@ export class PrivatePostService {
 
   async isPostOwner(userId: number, postId: number): Promise<boolean> {
     const user = await this.userRepository.getUserWithPosts(postId);
-
-    return user.id === userId;
+    if (user) {
+      return user.id === userId;
+    } else {
+      throw new NotFoundException('존재하지 않는 포스트입니다.');
+    }
   }
 
   async updateContent(user: User, updateContentDto: UpdateContentDto) {
