@@ -51,9 +51,7 @@ export class PrivatePostRepository extends Repository<PrivatePost> {
       user,
       content,
       depth: 0,
-      originId: -1,
     });
-    post.originId = post.id;
     return await this.repository.save(post);
   }
 

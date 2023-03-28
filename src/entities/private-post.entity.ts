@@ -16,7 +16,7 @@ export class PrivatePost extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column({ default: -1 })
   originId!: number;
 
   @Column('text')
