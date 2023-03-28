@@ -41,7 +41,6 @@ export class PrivatePostRepository extends Repository<PrivatePost> {
 
   async findByUserId(userId: number): Promise<PrivatePost[]> {
     return this.repository.find({
-      relations: { user: true },
       where: { user: { id: userId } },
     });
   }

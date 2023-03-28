@@ -40,7 +40,7 @@ export class PrivatePostController {
   @ApiOperation({
     summary: '자기 자신이 쓴 지인지정헌혈 포스팅 가져오기',
   })
-  getMyPrivatePost(@AuthUser() user: User): Promise<PrivatePost[]> {
+  getMyPrivatePost(@AuthUser() user: User) {
     return this.privatePostService.getMyPrivatePost(user.id);
   }
 

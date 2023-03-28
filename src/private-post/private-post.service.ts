@@ -73,8 +73,22 @@ export class PrivatePostService {
     return posts;
   }
 
-  async getMyPrivatePost(userId: number): Promise<PrivatePost[]> {
-    return this.privatePostRepository.findByUserId(userId);
+  async getMyPrivatePost(userId: number) {
+    const myPosts = await this.privatePostRepository.findByUserId(userId);
+    const posts = Promise.all(
+      myPosts.map(async (post) => {
+        const originId = post.originId;
+        if (originId != -1) {
+          const originPost = await this.privatePostRepository.findPostByPostId(
+            originId,
+          );
+          return { post, originPost };
+        }
+        return post;
+      }),
+    );
+
+    return posts;
   }
 
   async postWardPostWithAutoSharing(
